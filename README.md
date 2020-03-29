@@ -8,7 +8,6 @@ Maven POM parser written in Go that supports recursive variable expansion/interp
 ```xml
 <project>
 	<version>${p1}.${a.b}.z</version>
-	<broken>${p1}.${z}</broken>
 	<properties>
 		<p1>x${p.b}</p1>
 		<p.b>x</p.b>
@@ -16,7 +15,7 @@ Maven POM parser written in Go that supports recursive variable expansion/interp
 </project>
 ```
 
-```
+```go
 model, err := Unmarshal([]byte(data))
 
 // supply additional variables
