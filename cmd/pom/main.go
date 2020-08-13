@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/docopt/docopt-go"
-	"github.com/reconquest/pom-go"
+	"github.com/reconquest/pom"
 )
 
 var (
@@ -14,7 +14,7 @@ var (
 	usage   = "pom " + version + `
 
 Usage:
-  pom [options] <key>
+  pom [options] [-p] <key> [<value>]
   pom -h | --help
   pom --version
 
@@ -31,6 +31,10 @@ func main() {
 		panic(err)
 	}
 
+	propertyMode := args["-p"].(bool)
+	key := args["<key>"].(string)
+	value, withValue := args["<value>"].(string)
+
 	contents, err := ioutil.ReadFile(args["-i"].(string))
 	if err != nil {
 		log.Fatal(err)
@@ -41,10 +45,33 @@ func main() {
 		log.Fatal(err)
 	}
 
-	value, err := model.Get(args["<key>"].(string))
-	if err != nil {
-		log.Fatal(err)
+	if !withValue {
+		var actual string
+		if propertyMode {
+			actual, err = model.GetProperty(key)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			actual, err = model.Get(key)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+		fmt.Println(actual)
+
+		return
 	}
 
-	fmt.Println(value)
+	if propertyMode {
+		model.SetProperty(key, value)
+		data, err := model.Marshal()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(string(data))
+	} else {
+		panic("Not implemented")
+	}
 }

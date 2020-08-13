@@ -39,6 +39,10 @@ func Unmarshal(data []byte) (*Model, error) {
 	return model, nil
 }
 
+func (model *Model) Marshal() ([]byte, error) {
+	return model.xml.Xml()
+}
+
 func (model *Model) SetProperty(key, value string) {
 	model.properties[key] = value
 }
